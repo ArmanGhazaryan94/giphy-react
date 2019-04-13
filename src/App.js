@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Giphy from "./Giphy";
 
 class App extends Component {
+  renderContent(gifs) {
+    if(typeof gifs === 'string') {
+      return <img src={gifs}/>;
+    }
+    const { data, pagination } = gifs || {};
+    if (data) {
+      return Array.isArray(data)
+        ? data.map(gif => <img key={gif.id} src={gif.images.preview_gif.url}/>)
+        : <img src={data.images.original.url}/>;
+    }
+
+    return null;
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div>
+        <Giphy render={this.renderContent}/>
       </div>
     );
   }

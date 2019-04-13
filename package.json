@@ -1,8 +1,9 @@
 {
   "name": "giphy-test",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
+    "axios": "^0.18.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "2.1.8"
