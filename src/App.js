@@ -9,7 +9,7 @@ class App extends Component {
     searchText: '',
     id: '',
     value: '',
-    sorted: ''
+    sortBy: ''
   };
 
   renderContent(gifs) {
@@ -19,15 +19,13 @@ class App extends Component {
     const { data, pagination } = gifs || {};
     if (data) {
       return Array.isArray(data)
-        ? data.map(gif => <img key  ={gif.id} src={gif.images.preview_gif.url}/>)
+        ? data.map(gif => <img key={gif.id} src={gif.images.preview_gif.url}/>)
         : <img src={data.images.original.url}/>;
     }
-
     return null;
   }
 
   renderTrending = (data) => {
-    console.log(data)
     if(!data){
       return 'something went wrong'
     }
@@ -35,36 +33,40 @@ class App extends Component {
       ? data.data.length
         ?(<ul className='trending'>
           {data.data.map(gif =>
-            <li key={gif.id} onClick={() => this.setState({ id: gif.id })}>
-              <p>{gif.title.slice(0, gif.title.indexOf('GIF'))}</p>
-              <img key={gif.id} src={gif.images.preview_gif.url}/>
+            <li key={gif.id} onClick={() => this.onGifClick(gif.id)}>
+              <p>{this.getGifTitle(gif)}</p>
+              <img alt={gif.title} key={gif.id} src={gif.images.preview_gif.url}/>
             </li>)
           }
         </ul>)
         : 'there are no items'
-      :  <img src={data.data.images.original.url}/>
+      :  <div className='center'>
+      <img alt={data.data.title} src={data.data.images.original.url}/>
+    </div>
   };
+
+  getGifTitle = (gif) => gif.title.slice(0, gif.title.indexOf('GIF'));
 
   onGifClick = (id) => {
     this.setState({ id })
-  }
+  };
 
   handleSearch = (e) => {
     if(this.timeoutID){
       clearTimeout(this.timeoutID)
     }
     const searchText = e.target.value;
-    this.searchText = searchText;
-    this.setState({ value: searchText})
-    this.timeoutID = setTimeout(() => this.setState({ n: searchText, searchText  }), 400);
+    this.setState({ value: searchText});
+    this.timeoutID = setTimeout(() => this.setState({ searchText }), 400);
   };
 
   onSortChange = (e) => {
-    this.setState({ sorted: e.target.value })
+    this.setState({ sortBy: e.target.value })
   };
 
+  onBackClick = () => this.setState({ id: '' });
+
   render() {
-    console.log(this.state)
     return (
       <div className='container'>
         {
@@ -75,23 +77,23 @@ class App extends Component {
                   ? `Searched items by '${this.state.searchText}'`
                   : 'Trending'
               }</h1>
-              <div className='search'>
+              <div className='center'>
                 <label>
                   Search <input type="text" onChange={this.handleSearch} value={this.state.value}/>
                 </label>
               </div>
-              <div className='search sort'>
-                Sort by <select name="sort" onChange={this.onSortChange}>
-                <option value="">none</option>
-                <option value="ASC">ASC</option>
-                <option value="DESC">DESC</option>
+              <div className='center sort'>
+                Sort by <select name="sort" onChange={this.onSortChange} value={this.state.sortBy}>
+                <option value="">None</option>
+                <option value="DESC">Newest</option>
+                <option value="ASC">Oldest</option>
               </select>
               </div>
             </header>
-            : <button onClick={() => this.setState({ id: '' })}>Back</button>
+            : <button onClick={this.onBackClick}>Back</button>
         }
         <Giphy
-          sorted={this.state.sorted}
+          sortBy={this.state.sortBy}
           id={this.state.id}
           searchTerm={this.state.searchText}
           render={this.renderTrending}
