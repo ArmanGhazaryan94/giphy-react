@@ -9,10 +9,11 @@ class App extends Component {
     searchText: '',
     id: '',
     value: '',
-    sortBy: ''
+    sortBy: '',
+    offset: 0,
   };
 
-  renderContent(gifs) {
+  static renderContent(gifs) {
     if(typeof gifs === 'string') {
       return <img src={gifs}/>;
     }
@@ -25,9 +26,11 @@ class App extends Component {
     return null;
   }
 
+  onChangePage = (isNext) => this.setState(prevState => ({ offset: prevState.offset + (isNext ? 25 : -25) }))
+
   renderTrending = (data) => {
     if(!data){
-      return 'something went wrong'
+      return <p className='center error'>something went wrong</p>
     }
     return Array.isArray(data.data)
       ? data.data.length
@@ -38,7 +41,8 @@ class App extends Component {
               <img alt={gif.title} key={gif.id} src={gif.images.preview_gif.url}/>
             </li>)
           }
-        </ul>)
+        </ul>
+        )
         : 'there are no items'
       :  <div className='center'>
       <img alt={data.data.title} src={data.data.images.original.url}/>
@@ -84,10 +88,14 @@ class App extends Component {
               </div>
               <div className='center sort'>
                 Sort by <select name="sort" onChange={this.onSortChange} value={this.state.sortBy}>
-                <option value="">None</option>
-                <option value="DESC">Newest</option>
-                <option value="ASC">Oldest</option>
-              </select>
+                  <option value="">None</option>
+                  <option value="DESC">Newest</option>
+                  <option value="ASC">Oldest</option>
+                </select>
+              </div>
+              <div className='buttons'>
+                <button disabled={!this.state.offset} onClick={() => this.onChangePage(false)}>Previous page</button>
+                <button  onClick={() => this.onChangePage(true)}>Next page</button>
               </div>
             </header>
             : <button onClick={this.onBackClick}>Back</button>
@@ -97,6 +105,7 @@ class App extends Component {
           id={this.state.id}
           searchTerm={this.state.searchText}
           render={this.renderTrending}
+          offset={this.state.offset}
         />
       </div>
     );

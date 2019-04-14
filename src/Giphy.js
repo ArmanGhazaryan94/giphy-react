@@ -1,11 +1,20 @@
 import React from "react";
 import axios from "axios";
 import {isEmptyObject} from "./helpers";
+import PropTypes from 'prop-types';
 
 const BASE_URL = 'http://api.giphy.com/v1/gifs';
 const API_KEY = 'SsZBTCxQ2TaB6q8ixf35x6HC5aL6FWbu';
 
-class Giphy extends React.PureComponent {
+export default class Giphy extends React.PureComponent {
+  static propTypes = {
+    render: PropTypes.func.isRequired,
+    id: PropTypes.string,
+    offset: PropTypes.number,
+    sortBy: PropTypes.string,
+    searchTerm: PropTypes.string,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,10 +33,14 @@ class Giphy extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { upload } = nextProps;
+    const { upload, id, offset, searchTerm } = nextProps;
     if (upload && !isEmptyObject(upload)) {
       this.uploadImage(upload);
-    } else if (this.props.searchTerm !== nextProps.searchTerm || this.props.id !== nextProps.id) {
+    } else if (
+      this.props.searchTerm !== searchTerm
+      || this.props.id !== id
+      || this.props.offset !== offset
+    ) {
       this.fetchData(nextProps);
     }
   }
@@ -49,20 +62,24 @@ class Giphy extends React.PureComponent {
   fetchData(props) {
     axios
       .get(this.getURL(props))
-      .then(({ data }) => this.setState({ data }))
-      .catch((err) => {
-        console.error(err);
-        this.setState({ data: null })
-      });
+      .then(({ data }) => {
+        this.setState({ data })
+      })
+      .catch(this.handleError);
   }
 
   uploadImage(data) {
-    const { username } = data;
+    const { username, src } = data;
     axios
-      .post(`https://upload.giphy.com/v1/gifs?api_key=${this.apiKey}&username=${username}`)
+      .post(`https://upload.giphy.com/v1/gifs?api_key=${this.apiKey}&username=${username}&source_image_url=${src}`)
       .then(res => this.setState({ data: res.data.id }))
-      .catch(console.error);
+      .catch(this.handleError);
   }
+
+  handleError = (err) => {
+    console.error(err);
+    this.setState({ data: null });
+  };
 
   checkDataTypes = () => {
     const { data } = this.state;
@@ -71,7 +88,7 @@ class Giphy extends React.PureComponent {
   };
 
   render(){
-    const { sortBy } = this.props;
+    const { sortBy, render } = this.props;
     const { data } = this.state;
 
     if (this.checkDataTypes()) {
@@ -83,7 +100,6 @@ class Giphy extends React.PureComponent {
       return this.props.render({data: sortedData, pagination: data.pagination})
     }
 
-    return this.props.render(data);
+    return render && render(data);
   }
 }
-export default Giphy;

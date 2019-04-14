@@ -34,3 +34,15 @@ input {
 .sort {
     margin-top: 10px;
 }
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 200px;
+    margin: 10px auto;
+}
+.error {
+    text-transform: uppercase;
+    color: orangered;
+    font-weight: bold;
+}
