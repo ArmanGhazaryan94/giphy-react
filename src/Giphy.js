@@ -13,6 +13,7 @@ export default class Giphy extends React.PureComponent {
     offset: PropTypes.number,
     sortBy: PropTypes.string,
     searchTerm: PropTypes.string,
+    apiKey: PropTypes.string
   };
 
   constructor(props) {
