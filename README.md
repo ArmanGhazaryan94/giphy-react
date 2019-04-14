@@ -53,18 +53,25 @@ class Example extends Component {
 
 ###render 
 handler returns gifs from Giphy API (required, function)
+
 ###id
 gif ID that should be fetched from Giphy API (string)
+
 ###searchTerm 
 search gifs by title (string)
+
 ###offset
 skip some count gifs from start (number)
+
 ###apiKey
 Giphy API api key (string)
+
 ###upload
 upload provided Gif (object ex. {username: 'John', src: 'Some gif source'})
+
 ###sortBy
 Sort by Gif's uploaded time (string ex. 'ASC', 'DESC')
+
 
 ## License
 
