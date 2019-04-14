@@ -15,17 +15,20 @@ class Giphy extends React.PureComponent {
     this.apiKey = this.props.apiKey || API_KEY;
   }
 
-  fetchData() {
+  fetchData(props) {
     axios
-      .get(this.getURL())
+      .get(this.getURL(props))
       .then(({ data }) => this.setState({ data }))
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        this.setState({ data: null })
+      });
   }
 
-  getURL() {
-    const { src, id, offset, searchTerm } = this.props;
+  getURL(props) {
+    const { src, id, offset, searchTerm } = props;
     let url = '';
-
+    console.log('a11111',searchTerm)
     if (src) {
       url = src;
     } else if (id) {
@@ -41,13 +44,26 @@ class Giphy extends React.PureComponent {
 
 
   componentDidMount() {
+    console.log(11)
     const { src, upload } = this.props;
     if (src) {
       this.setState({ data: src })
     } else if (upload && !isEmptyObject(upload)) {
       this.uploadImage(upload);
     } else {
-      this.fetchData();
+      this.fetchData(this.props);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { src, upload } = nextProps;
+    console.log('next', nextProps, this.props)
+    if (src) {
+      this.setState({ data: src })
+    } else if (upload && !isEmptyObject(upload)) {
+      this.uploadImage(upload);
+    } else {
+      this.fetchData(nextProps);
     }
   }
 
@@ -60,16 +76,18 @@ class Giphy extends React.PureComponent {
   }
 
   render(){
-    const { sorted, order = 'DESC', src, id } = this.props;
+    console.log('rendered')
+    const { sorted, src, id } = this.props;
     const { data } = this.state;
 
-    if (sorted && data && !src && !id) {
+    if (sorted && data && data.data && !src && !id) {
+      console.log(this.props)
       const sortedData = [
-        ...data.data.sort((prev, cur) => order === 'DESC'
-          ? Date(prev.import_datetime) - Date(cur.import_datetime)
-          : Date(cur.import_datetime) - Date(prev.import_datetime))
+        ...data.data.sort((prev, cur) => sorted === 'DESC'
+          ? new Date(prev.import_datetime).getTime() - new Date(cur.import_datetime).getTime()
+          : new Date(cur.import_datetime).getTime() - new Date(prev.import_datetime).getTime())
       ];
-      return this.props.render({data: sortedData})
+      return this.props.render({data: sortedData, pagination: data.pagination})
     }
 
     return this.props.render(data);
