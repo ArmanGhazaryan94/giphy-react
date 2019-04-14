@@ -51,25 +51,25 @@ class Example extends Component {
 
 # Props
 
-###render 
+### render 
 handler returns gifs from Giphy API (required, function)
 
-###id
+### id
 gif ID that should be fetched from Giphy API (string)
 
-###searchTerm 
+### searchTerm 
 search gifs by title (string)
 
-###offset
+### offset
 skip some count gifs from start (number)
 
-###apiKey
+### apiKey
 Giphy API api key (string)
 
-###upload
+### upload
 upload provided Gif (object ex. {username: 'John', src: 'Some gif source'})
 
-###sortBy
+### sortBy
 Sort by Gif's uploaded time (string ex. 'ASC', 'DESC')
 
 
